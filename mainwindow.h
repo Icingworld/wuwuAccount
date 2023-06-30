@@ -26,7 +26,7 @@ public:
     QString getDate() const;
     void newType(const QString & name, int mode, const QString & color);
     void deleteType(const QString & name);
-    void addAccount(const QString & date, const QString & type, double & amount, QString note);
+    void addAccount(const int & date, const QString & type, const double & amount, QString note);
     void createUser(const QString & name, const QString & password);
     void deleteUser(const QString & name, const QString & password);
     void import();
