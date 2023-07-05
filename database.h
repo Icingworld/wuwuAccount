@@ -4,6 +4,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
+#include <QCryptographicHash>
 
 class Database
 {
@@ -19,6 +20,7 @@ public:
     void close();
     QSqlQuery query() const;
     void error() const;
+    QString md5(const QString & STRING) const;
 };
 
 #endif // DATABASE_H

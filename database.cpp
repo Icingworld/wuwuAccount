@@ -53,3 +53,10 @@ void Database::error() const
 {
     qDebug() << DATABASE.lastError().text();
 }
+
+QString Database::md5(const QString & STRING) const
+{
+    QCryptographicHash hash(QCryptographicHash::Md5);
+    hash.addData(STRING.toUtf8());
+    return hash.result().toHex();
+}

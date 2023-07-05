@@ -1,9 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(Database & dbs, QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    , ui(new Ui::MainWindow), db(dbs)
 {
     ui->setupUi(this);
     launchDatabase();

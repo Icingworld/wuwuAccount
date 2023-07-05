@@ -6,31 +6,44 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>500</width>
     <height>300</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>400</width>
+    <width>500</width>
     <height>300</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>400</width>
+    <width>500</width>
     <height>300</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>登录</string>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1,7,1">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout" stretch="1,5,1,1,1,1">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="1,3,1,1,1,2">
      <item>
       <spacer name="verticalSpacer_2">
        <property name="orientation">
@@ -86,7 +99,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_2"/>
+            <widget class="QComboBox" name="chooseAccount"/>
            </item>
           </layout>
          </item>
@@ -104,7 +117,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="comboBox"/>
+            <widget class="QLineEdit" name="typeAccount"/>
            </item>
           </layout>
          </item>
@@ -125,7 +138,11 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="password">
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -142,14 +159,17 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="3,7">
            <item>
-            <widget class="QLabel" name="label_2">
+            <widget class="QPushButton" name="toRegister">
+             <property name="styleSheet">
+              <string notr="true">QPushButton{background-color: transparent;border: none;color: black;padding: 0;margin: 0;text-align:left;}</string>
+             </property>
              <property name="text">
               <string>去注册</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="Login">
              <property name="text">
               <string>登录</string>
              </property>
@@ -164,14 +184,17 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="3,7">
            <item>
-            <widget class="QLabel" name="label_5">
+            <widget class="QPushButton" name="toLogin">
+             <property name="styleSheet">
+              <string notr="true">QPushButton{background-color: transparent;border: none;color: black;padding: 0;margin: 0;text-align:left;}</string>
+             </property>
              <property name="text">
               <string>去登录</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_2">
+            <widget class="QPushButton" name="Register">
              <property name="text">
               <string>注册</string>
              </property>
@@ -197,6 +220,19 @@
       </spacer>
      </item>
     </layout>
+   </item>
+   <item>
+    <spacer name="horizontalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

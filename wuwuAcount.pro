@@ -13,17 +13,20 @@ win32-msvc* {
 }
 
 SOURCES += \
+    add.cpp \
     database.cpp \
     login.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
+    add.h \
     database.h \
     login.h \
     mainwindow.h
 
 FORMS += \
+    add.ui \
     login.ui \
     mainwindow.ui
 

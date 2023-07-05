@@ -17,7 +17,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(Database & dbs, QWidget *parent = nullptr);
     ~MainWindow();
     QString md5(const QString & str) const;
     void setPassword(const QString & PASSWORD);
