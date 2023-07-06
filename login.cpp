@@ -78,10 +78,7 @@ void login::initDatabase(const QString & name, const QString & password)
     QSqlQuery query = db.query();
     // name: 名字 password: 密码的md5
     query.exec("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY NOT NULL, name TEXT NOT NULL, password TEXT NOT NULL)");
-    query.prepare("INSERT INTO user (name, password) VALUES (:name, :password)");
-    query.bindValue(":name", name);
-    query.bindValue(":password", password);
-    query.exec();
+    db.createUser(name, password);
     // name: 名称 mode: 类别 color: 颜色
     query.exec("CREATE TABLE IF NOT EXISTS type (id INTEGER PRIMARY KEY NOT NULL, name TEXT NOT NULL, mode INTEGER NOT NULL, color TEXT NOT NULL)");
     // date: 日期 type: 种类 amount: 数量 note: 备注
@@ -120,7 +117,7 @@ void login::on_Login_clicked()
     {
         // login mode
         QString accountName = ui->chooseAccount->currentText();
-        if (!launchDatabase("data/" + accountName + ".db"))
+        if (!launchDatabase("data/" + accountName + "/" + accountName + ".db"))
         {
             note("读取失败！");
         } else {
@@ -135,7 +132,7 @@ void login::on_Login_clicked()
             note("读取失败！");
         } else {
             // init user info and database
-            initDatabase(accountName, db.md5(password));
+            initDatabase(accountName, password);
             launchMainWindow();
         }
     }

@@ -3,13 +3,17 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QFileDialog>
+#include <QDate>
 #include <QDebug>
 #include <QCryptographicHash>
+#include <QDateTime>
 
 class Database
 {
 private:
     QSqlDatabase DATABASE;
+    QString NAME;
 public:
     Database();
     ~Database();
@@ -18,9 +22,17 @@ public:
     void setPassword(const QString & PASSWORD);
     bool isOpen() const;
     void close();
+    QString name() const;
     QSqlQuery query() const;
     void error() const;
     QString md5(const QString & STRING) const;
+    void createUser(const QString & name, const QString & password);
+    QString getDate() const;
+    void deleteType(const QString & name);
+    void addAccount(const int & date, const QString & type, const double & amount, QString note);
+    void deleteUser(const QString & name, const QString & password);
+    void import(QDialog & qdialog);
+    QString getTime() const;
 };
 
 #endif // DATABASE_H
