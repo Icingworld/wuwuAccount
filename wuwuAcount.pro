@@ -11,9 +11,10 @@ CONFIG += c++11
 win32-msvc* {
     QMAKE_CXXFLAGS += /source-charset:utf-8 /execution-charset:utf-8
 }
-
+msvc:QMAKE_CXXFLAGS += -execution-charset:utf-8
 SOURCES += \
     add.cpp \
+    checkgroup.cpp \
     database.cpp \
     login.cpp \
     main.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
 
 HEADERS += \
     add.h \
+    checkgroup.h \
     database.h \
     login.h \
     mainwindow.h

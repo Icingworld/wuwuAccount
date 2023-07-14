@@ -27,9 +27,7 @@ void login::checkUser()
         // get all users account
         QStringList user = dataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
         for (const QString & fileName : user) {
-            qDebug() << "data/" + fileName + "/" + fileName + ".db";
             QFile file("data/" + fileName + "/" + fileName + ".db");
-            qDebug() << file.exists();
             if (file.exists())
             {
                 users.append(fileName);
@@ -82,7 +80,7 @@ void login::initDatabase(const QString & name, const QString & password)
     // name: 名称 mode: 类别 color: 颜色
     query.exec("CREATE TABLE IF NOT EXISTS type (id INTEGER PRIMARY KEY NOT NULL, name TEXT NOT NULL, mode INTEGER NOT NULL, color TEXT NOT NULL)");
     // date: 日期 type: 种类 amount: 数量 note: 备注
-    query.exec("CREATE TABLE IF NOT EXISTS account (id INTEGER PRIMARY KEY NOT NULL, date INTEGER NOT NULL, type TEXT NOT NULL, amount REAL NOT NULL, note TEXT)");
+    query.exec("CREATE TABLE IF NOT EXISTS account (id INTEGER PRIMARY KEY NOT NULL, mode INTEGER NOT NULL, type TEXT NOT NULL, amount REAL NOT NULL, year INTEGER NOT NULL, month INTEGER NOT NULL, day INTEGER NOT NULL, note TEXT)");
     newType("工资", 0, "green");
     newType("外快", 0, "green");
     newType("其他", 0, "green");

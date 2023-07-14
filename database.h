@@ -29,7 +29,6 @@ public:
     void createUser(const QString & name, const QString & password);
     QString getDate() const;
     void deleteType(const QString & name);
-    void addAccount(const int & date, const QString & type, const double & amount, QString note);
     void deleteUser(const QString & name, const QString & password);
     void import(QDialog & qdialog);
     QString getTime() const;
