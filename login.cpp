@@ -6,6 +6,7 @@ login::login(QWidget *parent) :
     ui(new Ui::login)
 {
     ui->setupUi(this);
+    setWindowIcon(QIcon(":/logo.png"));
     // remove the help button -> '?'
     setWindowFlag(Qt::WindowContextHelpButtonHint, false);
     checkUser();
@@ -94,23 +95,31 @@ void login::initDatabase(const QString & name, const QString & password)
     newType("医疗", 1, "red");
     newType("保险", 1, "red");
     newType("健身", 1, "red");
+    newType("其他", 1, "red");
 }
 
 void login::on_toRegister_clicked()
 {
     ui->stackedWidget->setCurrentIndex(1);
     ui->stackedWidget_2->setCurrentIndex(1);
+    ui->password->clear();
 }
 
 void login::on_toLogin_clicked()
 {
     ui->stackedWidget->setCurrentIndex(0);
     ui->stackedWidget_2->setCurrentIndex(0);
+    ui->password->clear();
 }
 
 void login::on_Login_clicked()
 {
     QString password = ui->password->text();
+    if (password == "")
+    {
+        note("密码不能为空！");
+        return;
+    }
     if (ui->stackedWidget->currentIndex() == 0)
     {
         // login mode
@@ -119,8 +128,24 @@ void login::on_Login_clicked()
         {
             note("读取失败！");
         } else {
-            // TODO: judge the password
-            launchMainWindow();
+            // judge the password
+            QString value{};
+            QSqlQuery query = db.query();
+            if (query.exec("SELECT password FROM user")) {
+                while (query.next()) {
+                    value = query.value(0).toString();
+                }
+            } else {
+                qDebug() << "get user info failed:" << query.lastError().text();
+            }
+            if (value == db.md5(password))
+            {
+                // login and launch mainwindow
+                launchMainWindow();
+            } else {
+                // password wrong
+                note("密码错误！");
+            }
         }
     } else {
         // register mode

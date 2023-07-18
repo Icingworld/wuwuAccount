@@ -2,6 +2,7 @@
 #define ADD_H
 
 #include <QDialog>
+#include <QMessageBox>
 #include "database.h"
 #include "checkgroup.h"
 
@@ -16,9 +17,13 @@ class add : public QDialog
 public:
     explicit add(Database db_, QDate date_, QWidget *parent = nullptr);
     ~add();
+    void Warning(const QString & string);
     void getTypeList();
     void setType(const int type);
     void addAccount(const int & mode, const QString & type, const double & amount, const int & year, const int & month, const int & day, QString note);
+
+signals:
+    void sendSignal();
 
 private slots:
     void on_buttonBox_accepted();
@@ -30,7 +35,7 @@ private:
     Ui::add *ui;
     Database db;
     QDate date;
-    int mode{0};
+    int mode{1};
     Checkgroup check;
     QStringList incomeTypeList;
     QStringList expenditureTypeList;

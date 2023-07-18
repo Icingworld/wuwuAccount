@@ -78,11 +78,16 @@ void Database::createUser(const QString & name, const QString & password)
 }
 
 
-QString Database::getDate() const
+QString Database::getFormattedDate() const
 {
     QDate currentDate = QDate::currentDate();
     QString formattedDate = currentDate.toString("yyyy.MM.dd");
     return formattedDate;
+}
+
+QDate Database::getDate() const
+{
+    return QDate::currentDate();
 }
 
 void Database::deleteType(const QString & name)
@@ -110,8 +115,14 @@ void Database::import(QDialog & qdialog)
     }
 }
 
-QString Database::getTime() const
+
+/* set time of the date choosen by calendar */
+void Database::setCurrentDate(QDate currentDate)
 {
-    qint64 timestamp = QDateTime::currentMSecsSinceEpoch();
-    return QString::number(timestamp);
+    date = currentDate;
+}
+
+QDate Database::currentDate() const
+{
+    return date;
 }

@@ -14,6 +14,7 @@ class Database
 private:
     QSqlDatabase DATABASE;
     QString NAME;
+    QDate date;
 public:
     Database();
     ~Database();
@@ -27,11 +28,13 @@ public:
     void error() const;
     QString md5(const QString & STRING) const;
     void createUser(const QString & name, const QString & password);
-    QString getDate() const;
+    QString getFormattedDate() const;
+    QDate getDate() const;
     void deleteType(const QString & name);
     void deleteUser(const QString & name, const QString & password);
     void import(QDialog & qdialog);
-    QString getTime() const;
+    void setCurrentDate(QDate currentDate);
+    QDate currentDate() const;
 };
 
 #endif // DATABASE_H

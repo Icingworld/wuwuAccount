@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>呜呜记账</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -152,21 +152,13 @@
                    <attribute name="title">
                     <string>Tab 1</string>
                    </attribute>
-                   <layout class="QVBoxLayout" name="verticalLayout_8">
-                    <item>
-                     <layout class="QVBoxLayout" name="verticalLayout_7"/>
-                    </item>
-                   </layout>
+                   <layout class="QVBoxLayout" name="verticalLayout_8"/>
                   </widget>
                   <widget class="QWidget" name="tab_2">
                    <attribute name="title">
                     <string>Tab 2</string>
                    </attribute>
-                   <layout class="QGridLayout" name="gridLayout_2">
-                    <item row="0" column="0">
-                     <layout class="QGridLayout" name="gridLayout"/>
-                    </item>
-                   </layout>
+                   <layout class="QGridLayout" name="gridLayout_2"/>
                   </widget>
                  </widget>
                 </item>
