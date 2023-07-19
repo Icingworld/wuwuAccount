@@ -10,11 +10,18 @@ login::login(QWidget *parent) :
     // remove the help button -> '?'
     setWindowFlag(Qt::WindowContextHelpButtonHint, false);
     checkUser();
+    ui->password->setFocus();
 }
 
 login::~login()
 {
     delete ui;
+}
+
+void login::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
+        ui->Login->click(); // 执行按钮的点击操作
+    }
 }
 
 void login::checkUser()
@@ -103,6 +110,7 @@ void login::on_toRegister_clicked()
     ui->stackedWidget->setCurrentIndex(1);
     ui->stackedWidget_2->setCurrentIndex(1);
     ui->password->clear();
+    ui->typeAccount->setFocus();
 }
 
 void login::on_toLogin_clicked()
@@ -110,6 +118,7 @@ void login::on_toLogin_clicked()
     ui->stackedWidget->setCurrentIndex(0);
     ui->stackedWidget_2->setCurrentIndex(0);
     ui->password->clear();
+    ui->password->setFocus();
 }
 
 void login::on_Login_clicked()

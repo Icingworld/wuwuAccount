@@ -1,4 +1,4 @@
-QT       += core gui sql
+QT       += core gui sql charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,6 +14,7 @@ win32-msvc* {
 msvc:QMAKE_CXXFLAGS += -execution-charset:utf-8
 SOURCES += \
     add.cpp \
+    charts.cpp \
     checkgroup.cpp \
     database.cpp \
     login.cpp \
@@ -22,6 +23,7 @@ SOURCES += \
 
 HEADERS += \
     add.h \
+    charts.h \
     checkgroup.h \
     database.h \
     login.h \

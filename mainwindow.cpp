@@ -1,21 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-void addBlockWidget::addButton_clicked()
-{
-    Database & dbRef = *db;
-    add * add_ = new add(dbRef, dbRef.currentDate());
-    connect(add_, &add::sendSignal, this, &addBlockWidget::getSignal);
-    add_->show();
-}
-
-void addBlockWidget::getSignal()
-{
-    emit sendSignal();
-}
-
-/* TODO: 添加/删除种类，修改密码，清空历史 */
-
 MainWindow::MainWindow(Database & dbs, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow), db(dbs)
@@ -25,38 +10,33 @@ MainWindow::MainWindow(Database & dbs, QWidget *parent)
     // set date today
     db.setCurrentDate(db.getDate());
     setCalendar();
-    showInfo();
-    /* set tab */
+    // set tab
     scrollContent = new QWidget(this);
     layout = new QVBoxLayout(scrollContent);
     QScrollArea* scrollArea = new QScrollArea(this);
     scrollArea->setWidget(scrollContent);
     scrollArea->setWidgetResizable(true);
-    ui->tabs->addTab(scrollArea, "记录");
     scrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui->tabs->addTab(scrollArea, "记录");
+    scrollContent2 = new QWidget(this);
+    layout2 = new QVBoxLayout(scrollContent2);
+    QScrollArea* scrollArea2 = new QScrollArea(this);
+    scrollArea2->setWidget(scrollContent2);
+    scrollArea2->setWidgetResizable(true);
+    scrollArea2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui->tabs->addTab(scrollArea2, "分析");
     ui->tabs->removeTab(0);
     ui->tabs->removeTab(0);
-    /* add record */
+    // add record
     getRecord(db.getDate());
+
+    /* test */
+    setAnalyze(db.currentDate());
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::showInfo()
-{
-    ui->timenow->setText("当前：" + db.getFormattedDate());
-    QSqlQuery query = db.query();
-    if (query.exec("SELECT name FROM user")) {
-        while (query.next()) {
-            QString value1 = query.value(0).toString();
-            ui->username->setText("用户名：" + value1);
-        }
-    } else {
-        qDebug() << "get user info failed:" << query.lastError().text();
-    }
 }
 
 QDate MainWindow::getDate()
@@ -68,7 +48,7 @@ int MainWindow::getRecord(const QDate & date, bool flag)
 {
     if (flag)
     {
-        clearBlock();
+        clearBlock(layout);
         // add button
         addBlockWidget * addblockWidget = new addBlockWidget(&db, ui->tab);
         layout->addWidget(addblockWidget);
@@ -102,9 +82,39 @@ int MainWindow::getRecord(const QDate & date, bool flag)
             }
         }
     } else {
-        qDebug() << "get account record failed:" << query.lastError().text();
+        qDebug() << "get account record failed[1]:" << query.lastError().text();
     }
     return record.length();
+}
+
+void MainWindow::setAnalyze(const QDate & date)
+{
+    Data data{};
+    charts pieChart;
+    clearBlock(layout2);
+    double income{0.0}, expenditure{0.0};
+    int year = date.year();
+    int month = date.month();
+    int day = date.day();
+    QSqlQuery query = db.query();
+    // 这里选的是最多的五个，如果要拓展日期的话，得比较全部的和
+    query.prepare("SELECT type, mode, amount FROM account WHERE year = :year AND month = :month AND day = :day");
+    query.bindValue(":year", year);
+    query.bindValue(":month", month);
+    query.bindValue(":day", day);
+    if (query.exec()) {
+        while (query.next()) {
+            QString value1 = query.value(1).toString();
+            int value2 = query.value(2).toInt();;
+            double value3 = query.value(3).toDouble();
+            data.name.append(value1);
+            data.amount.append(value2);
+        }
+    } else {
+        qDebug() << "get account record failed[2]:" << query.lastError().text();
+    }
+    layout2->addWidget(pieChart.createPie(data, "支出饼状图"));
+    // TODO:我图怎么画不出来
 }
 
 void MainWindow::setCalendar()
@@ -126,11 +136,12 @@ void MainWindow::addBlock(const int id, const QString & type, const int & mode, 
     BlockWidget * blockWidget = new BlockWidget(id, type, amount, note, styleSheet, ui->tab);
     layout->addWidget(blockWidget);
     connect(blockWidget, &BlockWidget::sendDeleteSignal, this, &MainWindow::deleteRecord);
+    connect(blockWidget, &BlockWidget::sendUpdateSignal, this, &MainWindow::updateRecord);
 }
 
-void MainWindow::clearBlock()
+void MainWindow::clearBlock(QVBoxLayout * Layout)
 {
-    while (QLayoutItem* item = layout->takeAt(0)) {
+    while (QLayoutItem* item = Layout->takeAt(0)) {
         QWidget* widget = item->widget();
         if (widget) {
             delete widget;
@@ -141,7 +152,8 @@ void MainWindow::clearBlock()
 
 void MainWindow::on_calendar_clicked(const QDate &date)
 {
-    clearBlock();
+    ui->tabs->setCurrentIndex(0);
+    clearBlock(layout);
     getRecord(date);
     db.setCurrentDate(date);
 }
@@ -174,7 +186,7 @@ void MainWindow::callBack()
     getRecord(db.currentDate());
 }
 
-void MainWindow::deleteRecord(int id)
+void MainWindow::deleteRecord(const int id)
 {
     qDebug() << id;
     QMessageBox::StandardButton result = QMessageBox::question(nullptr, "警告", "确认删除？",
@@ -186,8 +198,22 @@ void MainWindow::deleteRecord(int id)
         if (query.exec()) {
             getRecord(db.currentDate());
         } else {
-            qDebug() << "Failed to delete data.";
+            qDebug() << "Failed to delete data." << query.lastError().text();
         }
+    }
+}
+
+void MainWindow::updateRecord(const int id, const double amount, const QString & note)
+{
+    QSqlQuery query = db.query();
+    query.prepare("UPDATE account SET amount = :amount, note = :note WHERE id = :id");
+    query.bindValue(":amount", amount);
+    query.bindValue(":note", note);
+    query.bindValue(":id", id);
+    if (query.exec()) {
+        getRecord(db.currentDate());
+    } else {
+        qDebug() << "Failed to update data." << query.lastError().text();
     }
 }
 

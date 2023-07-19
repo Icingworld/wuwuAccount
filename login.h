@@ -22,6 +22,7 @@ class login : public QDialog
 public:
     explicit login(QWidget *parent = nullptr);
     ~login();
+    void keyPressEvent(QKeyEvent *event);
     /* get all users exist */
     void checkUser();
     /* messagebox */

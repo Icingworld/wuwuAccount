@@ -12,8 +12,10 @@
 #include <QTextCharFormat>
 #include <QMessageBox>
 #include <QGridLayout>
+#include <QLineEdit>
 #include "database.h"
 #include "add.h"
+#include "charts.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,22 +26,27 @@ class BlockWidget : public QWidget
     Q_OBJECT
 public:
     int ID{0};
-    // TODO: add a new widget to enable stylesheet
+    bool isEdit{false};
+    QLineEdit * amountsEdit = new QLineEdit("", this);
+    QLineEdit * notesEdit = new QLineEdit("", this);
+    QPushButton* button1 = new QPushButton("编辑", this);
+    QPushButton* button2 = new QPushButton("删除", this);
+    
     BlockWidget(const int id, const QString & type, const double & amount, const QString & note, const QString & styleSheet, QWidget* parent = nullptr)
         : QWidget(parent), ID(id)
     {
         setObjectName("block");
+        this->setAttribute(Qt::WA_StyledBackground, true);
         setStyleSheet(styleSheet);
-
         QVBoxLayout * layout = new QVBoxLayout(this);
 
         /* type lineeit */
         QWidget * types = new QWidget(this);
         QHBoxLayout* typesLayout = new QHBoxLayout(types);
         QLabel* Label1 = new QLabel("类型:", this);
-        QLabel* typeLabel = new QLabel(type, this);
+        QLabel* typesLabel = new QLabel(type, this);
         typesLayout->addWidget(Label1);
-        typesLayout->addWidget(typeLabel);
+        typesLayout->addWidget(typesLabel);
         types->setLayout(typesLayout);
         layout->addWidget(types);
 
@@ -47,9 +54,10 @@ public:
         QWidget * amounts = new QWidget(this);
         QHBoxLayout* amountsLayout = new QHBoxLayout(amounts);
         QLabel* Label2 = new QLabel("金额:", this);
-        QLabel* amountsLabel = new QLabel(QString::number(amount), this);
+        amountsEdit->setText(QString::number(amount));
         amountsLayout->addWidget(Label2);
-        amountsLayout->addWidget(amountsLabel);
+        amountsLayout->addWidget(amountsEdit);
+        amountsEdit->setEnabled(false);
         amounts->setLayout(amountsLayout);
         layout->addWidget(amounts);
 
@@ -57,17 +65,16 @@ public:
         QWidget * notes = new QWidget(this);
         QHBoxLayout* notesLayout = new QHBoxLayout(notes);
         QLabel* Label3 = new QLabel("备注:", this);
-        QLabel* notesLabel = new QLabel(note, this);
+        notesEdit->setText(note);
         notesLayout->addWidget(Label3);
-        notesLayout->addWidget(notesLabel);
+        notesLayout->addWidget(notesEdit);
+        notesEdit->setEnabled(false);
         notes->setLayout(notesLayout);
         layout->addWidget(notes);
 
         /* buttons */
         QWidget * buttons = new QWidget(this);
         QHBoxLayout* buttonsLayout = new QHBoxLayout(buttons);
-        QPushButton* button1 = new QPushButton("编辑", this);
-        QPushButton* button2 = new QPushButton("删除", this);
         buttonsLayout->addWidget(button1);
         buttonsLayout->addWidget(button2);
         buttons->setLayout(buttonsLayout);
@@ -80,16 +87,34 @@ public:
     }
 
 signals:
-    void sendUpdateSignal();
-    void sendDeleteSignal(int id);
+    void sendUpdateSignal(const int id, const double amount, const QString & note);
+    void sendDeleteSignal(const int id);
 private slots:
     void sendSignal1()
     {
-        emit sendUpdateSignal();
+        if (isEdit)
+        {
+            emit sendUpdateSignal(ID, amountsEdit->text().toDouble(), notesEdit->text());
+        } else {
+            isEdit = true;
+            amountsEdit->setEnabled(true);
+            notesEdit->setEnabled(true);
+            button1->setText("确认");
+            button2->setText("取消");
+        }
     }
     void sendSignal2()
     {
-        emit sendDeleteSignal(ID);
+        if (isEdit)
+        {
+            isEdit = false;
+            amountsEdit->setEnabled(false);
+            notesEdit->setEnabled(false);
+            button1->setText("编辑");
+            button2->setText("删除");
+        } else {
+            emit sendDeleteSignal(ID);
+        }
     }
 };
 
@@ -110,8 +135,17 @@ public:
 signals:
     void sendSignal();
 private slots:
-    void addButton_clicked();
-    void getSignal();
+    void addButton_clicked()
+    {
+        Database & dbRef = *db;
+        add * add_ = new add(dbRef, dbRef.currentDate());
+        connect(add_, &add::sendSignal, this, &addBlockWidget::getSignal);
+        add_->show();
+    }
+    void getSignal()
+    {
+        emit sendSignal();
+    }
 };
 
 class MainWindow : public QMainWindow
@@ -121,24 +155,27 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(Database & dbs, QWidget *parent = nullptr);
     ~MainWindow();
-    void showInfo();
     QDate getDate();
     int getRecord(const QDate & date, bool flag=true);
+    void setAnalyze(const QDate & date);
     void setCalendar();
     void addBlock(const int id, const QString & type, const int & mode, const double & amount, const QString & note);
-    void clearBlock();
+    void clearBlock(QVBoxLayout * Layout);
     void Warning(const QString & string);
 
 private slots:
     void on_calendar_clicked(const QDate &date);
     void on_calendar_currentPageChanged(int year, int month);
     void callBack();
-    void deleteRecord(int id);
+    void deleteRecord(const int id);
+    void updateRecord(const int id, const double amount, const QString & note);
 
 private:
     Ui::MainWindow *ui;
     Database db;
     QWidget * scrollContent;
+    QWidget * scrollContent2;
     QVBoxLayout * layout;
+    QVBoxLayout * layout2;
 };
 #endif // MAINWINDOW_H

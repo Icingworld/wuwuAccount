@@ -66,7 +66,7 @@ void add::addAccount(const int & mode_, const QString & type, const double & amo
     query.bindValue(":month", month);
     query.bindValue(":day", day);
     query.bindValue(":note", note);
-    qDebug() << mode_ << type << amount << year << month << day << note;
+    // qDebug() << mode_ << type << amount << year << month << day << note;
     query.exec();
 }
 

@@ -77,44 +77,10 @@ void Database::createUser(const QString & name, const QString & password)
     query_.exec();
 }
 
-
-QString Database::getFormattedDate() const
-{
-    QDate currentDate = QDate::currentDate();
-    QString formattedDate = currentDate.toString("yyyy.MM.dd");
-    return formattedDate;
-}
-
 QDate Database::getDate() const
 {
     return QDate::currentDate();
 }
-
-void Database::deleteType(const QString & name)
-{
-    QSqlQuery query_ = query();
-    query_.prepare("DELETE FROM type WHERE name = :name");
-    query_.bindValue(":name", name);
-    query_.exec();
-}
-
-void Database::deleteUser(const QString & name, const QString & password)
-{
-    /* 删除用户文件夹 */
-    qDebug() << name << password;
-}
-
-/* 导入原配置文件 */
-void Database::import(QDialog & qdialog)
-{
-    /* 选择文件 */
-    QString Path = QFileDialog::getOpenFileName(&qdialog, QString("选择一个存档"), "/", "(*.db)");
-    if (Path.isEmpty())
-    {
-        qDebug() << "No File Selected";
-    }
-}
-
 
 /* set time of the date choosen by calendar */
 void Database::setCurrentDate(QDate currentDate)

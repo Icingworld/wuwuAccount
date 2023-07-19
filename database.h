@@ -28,11 +28,7 @@ public:
     void error() const;
     QString md5(const QString & STRING) const;
     void createUser(const QString & name, const QString & password);
-    QString getFormattedDate() const;
     QDate getDate() const;
-    void deleteType(const QString & name);
-    void deleteUser(const QString & name, const QString & password);
-    void import(QDialog & qdialog);
     void setCurrentDate(QDate currentDate);
     QDate currentDate() const;
 };
