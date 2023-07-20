@@ -139,6 +139,11 @@
           </item>
           <item>
            <widget class="QLineEdit" name="password">
+            <property name="font">
+             <font>
+              <pointsize>7</pointsize>
+             </font>
+            </property>
             <property name="echoMode">
              <enum>QLineEdit::Password</enum>
             </property>
@@ -152,7 +157,7 @@
      <item>
       <widget class="QStackedWidget" name="stackedWidget_2">
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="page_3">
         <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -160,6 +165,11 @@
           <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="3,7">
            <item>
             <widget class="QPushButton" name="toRegister">
+             <property name="font">
+              <font>
+               <underline>true</underline>
+              </font>
+             </property>
              <property name="styleSheet">
               <string notr="true">QPushButton{background-color: transparent;border: none;color: black;padding: 0;margin: 0;text-align:left;}</string>
              </property>
@@ -185,6 +195,11 @@
           <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="3,7">
            <item>
             <widget class="QPushButton" name="toLogin">
+             <property name="font">
+              <font>
+               <underline>true</underline>
+              </font>
+             </property>
              <property name="styleSheet">
               <string notr="true">QPushButton{background-color: transparent;border: none;color: black;padding: 0;margin: 0;text-align:left;}</string>
              </property>

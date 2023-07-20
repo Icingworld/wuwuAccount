@@ -10,9 +10,11 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QTextCharFormat>
+#include <QMap>
 #include <QMessageBox>
 #include <QGridLayout>
 #include <QLineEdit>
+#include <QPair>
 #include "database.h"
 #include "add.h"
 #include "charts.h"
@@ -158,6 +160,8 @@ public:
     QDate getDate();
     int getRecord(const QDate & date, bool flag=true);
     void setAnalyze(const QDate & date);
+    static bool compareValues(const QPair<QString, double>& pair1, const QPair<QString, double>& pair2);
+    QMap<QString, double> sortMapByValueDescending(const QMap<QString, double>& inputMap);
     void setCalendar();
     void addBlock(const int id, const QString & type, const int & mode, const double & amount, const QString & note);
     void clearBlock(QVBoxLayout * Layout);
@@ -169,10 +173,14 @@ private slots:
     void callBack();
     void deleteRecord(const int id);
     void updateRecord(const int id, const double amount, const QString & note);
+    void on_statistics_clicked();
+    void on_edit_clicked();
+    void on_tabs_currentChanged(int index);
 
 private:
     Ui::MainWindow *ui;
     Database db;
+    bool isMonthly{false}, isStatistics{false};
     QWidget * scrollContent;
     QWidget * scrollContent2;
     QVBoxLayout * layout;

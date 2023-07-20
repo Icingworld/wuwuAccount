@@ -31,7 +31,7 @@ MainWindow::MainWindow(Database & dbs, QWidget *parent)
     getRecord(db.getDate());
 
     /* test */
-    setAnalyze(db.currentDate());
+    setAnalyze(db.getDate());
 }
 
 MainWindow::~MainWindow()
@@ -89,32 +89,103 @@ int MainWindow::getRecord(const QDate & date, bool flag)
 
 void MainWindow::setAnalyze(const QDate & date)
 {
+    // check isMonthly
+    clearBlock(layout2);
     Data data{};
     charts pieChart;
-    clearBlock(layout2);
+    QMap <QString, double> map;
     double income{0.0}, expenditure{0.0};
+    QString Income{}, Expenditure{};
     int year = date.year();
     int month = date.month();
     int day = date.day();
     QSqlQuery query = db.query();
-    // 这里选的是最多的五个，如果要拓展日期的话，得比较全部的和
-    query.prepare("SELECT type, mode, amount FROM account WHERE year = :year AND month = :month AND day = :day");
-    query.bindValue(":year", year);
-    query.bindValue(":month", month);
-    query.bindValue(":day", day);
+    if (!isMonthly)
+    {
+        query.prepare("SELECT type, mode, amount FROM account WHERE year = :year AND month = :month AND day = :day");
+        query.bindValue(":year", year);
+        query.bindValue(":month", month);
+        query.bindValue(":day", day);
+    } else {
+        query.prepare("SELECT type, mode, amount FROM account WHERE year = :year AND month = :month");
+        query.bindValue(":year", year);
+        query.bindValue(":month", month);
+    }
     if (query.exec()) {
         while (query.next()) {
-            QString value1 = query.value(1).toString();
-            int value2 = query.value(2).toInt();;
-            double value3 = query.value(3).toDouble();
-            data.name.append(value1);
-            data.amount.append(value2);
+            QString value1 = query.value(0).toString();
+            int value2 = query.value(1).toInt();
+            double value3 = query.value(2).toDouble();
+            if (value2 == 0)
+            {
+                // income
+                income += value3;
+            } else {
+                // expenditure
+                expenditure += value3;
+                // count expenditure situation
+                if (!map.contains(value1))
+                {
+                    map.insert(value1, value3);
+                } else {
+                    map[value1] += value3;
+                }
+            }
         }
     } else {
         qDebug() << "get account record failed[2]:" << query.lastError().text();
     }
-    layout2->addWidget(pieChart.createPie(data, "支出饼状图"));
-    // TODO:我图怎么画不出来
+    // create piechart
+    QMap <QString, double> ordered_map = sortMapByValueDescending(map);
+    QMap<QString, double>::const_iterator iter;
+    int count{0};
+    for (iter = ordered_map.constBegin(); iter != ordered_map.constEnd(); ++iter) {
+        QString key = iter.key();
+        int value = iter.value();
+        if (count < 5)
+        {
+            count++;
+            data.name.append(key);
+            data.amount.append(value);
+            data.length++;
+        } else {
+            break;
+        }
+    }
+    if (!isMonthly)
+    {
+        Income = QString("本日收入：%1元").arg(income);
+        Expenditure = QString("本日支出：%1元").arg(expenditure);
+    } else {
+        Income = QString("本月共收入：%1元").arg(income);
+        Expenditure = QString("本月共支出：%1元").arg(expenditure);
+    }
+    QLabel * incomeLabel = new QLabel(Income, this);
+    QLabel * expenditureLabel = new QLabel(Expenditure, this);
+    layout2->addWidget(incomeLabel);
+    layout2->addWidget(expenditureLabel);
+    layout2->addWidget(pieChart.createPie(data, "主要支出饼状图"));
+}
+
+// must be static used for std::sort
+bool MainWindow::compareValues(const QPair<QString, double>& pair1, const QPair<QString, double>& pair2) {
+    return pair1.second > pair2.second; // descending sort
+}
+
+QMap<QString, double> MainWindow::sortMapByValueDescending(const QMap<QString, double>& inputMap) {
+    QList<QPair<QString, double>> tempList;
+    for (auto it = inputMap.begin(); it != inputMap.end(); ++it) {
+        tempList.append(qMakePair(it.key(), it.value()));
+    }
+
+    std::sort(tempList.begin(), tempList.end(), compareValues);
+
+    QMap<QString, double> sortedMap;
+    for (const auto& pair : tempList) {
+        sortedMap.insert(pair.first, pair.second);
+    }
+
+    return sortedMap;
 }
 
 void MainWindow::setCalendar()
@@ -127,7 +198,7 @@ void MainWindow::setCalendar()
 
 void MainWindow::addBlock(const int id, const QString & type, const int & mode, const double & amount, const QString & note)
 {
-    QString styleSheet{"QWidget#block { border: 0px solid gray; border-radius: 10px; background-color: rgba(231, 227, 228, 0.7); }"
+    QString styleSheet{"QWidget#block { border: 0px solid gray; border-radius: 10px; background-color: rgba(231, 227, 228, 0.8); }"
               "QWidget#block QWidget QLabel { background-color: transparent; color: black; }"};
     if (mode == 0) {
         styleSheet = "QWidget#block { border: 0px solid gray; border-radius: 10px; background-color: rgba(185, 199, 141, 0.5); }"
@@ -152,10 +223,14 @@ void MainWindow::clearBlock(QVBoxLayout * Layout)
 
 void MainWindow::on_calendar_clicked(const QDate &date)
 {
-    ui->tabs->setCurrentIndex(0);
+    if (!isStatistics)
+    {
+        ui->tabs->setCurrentIndex(0);
+    }
     clearBlock(layout);
     getRecord(date);
     db.setCurrentDate(date);
+    setAnalyze(date);
 }
 
 void MainWindow::on_calendar_currentPageChanged(int year, int month)
@@ -226,3 +301,29 @@ void MainWindow::Warning(const QString & string)
     messageBox.addButton("确认", QMessageBox::AcceptRole);
     messageBox.exec();
 }
+
+void MainWindow::on_statistics_clicked()
+{
+    isMonthly = true;
+    isStatistics = true;
+    ui->tabs->setTabEnabled(0, false);
+    ui->tabs->setCurrentIndex(1);
+    setAnalyze(db.currentDate());
+}
+
+void MainWindow::on_edit_clicked()
+{
+    isMonthly = false;
+    isStatistics = false;
+    ui->tabs->setTabEnabled(0, true);
+    on_calendar_clicked(db.currentDate());
+}
+
+void MainWindow::on_tabs_currentChanged(int index)
+{
+    if (index == 1)
+    {        
+        setAnalyze(db.currentDate());
+    }
+}
+

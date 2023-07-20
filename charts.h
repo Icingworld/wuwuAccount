@@ -6,6 +6,7 @@
 #include <QSplineSeries> 
 #include <QString>
 #include <QList>
+#include <QDebug>
 QT_CHARTS_USE_NAMESPACE
 
 enum {PIE};
