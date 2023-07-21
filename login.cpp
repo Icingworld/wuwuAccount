@@ -11,6 +11,8 @@ login::login(QWidget *parent) :
     setWindowFlag(Qt::WindowContextHelpButtonHint, false);
     checkUser();
     ui->password->setFocus();
+    ui->stackedWidget->setCurrentIndex(0);
+    ui->stackedWidget_2->setCurrentIndex(0);
 }
 
 login::~login()
